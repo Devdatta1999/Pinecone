@@ -34,32 +34,31 @@ with DAG(
     """
     @task
     def download_data():
-        """Download Medium dataset using requests"""
-        # Create data directory if it doesn't exist
-        data_dir = 'C:\Users\dygan\OneDrive\Desktop\Pinecone\medium_data'
+    # Use a temporary or Airflow-accessible directory
+        data_dir = '/tmp/medium_data'
         os.makedirs(data_dir, exist_ok=True)
-        
+
         # File path to save data
         file_path = f"{data_dir}/medium_data.csv"
-        
+
         # Download the data using requests
         url = 'https://s3-geospatial.s3.us-west-2.amazonaws.com/medium_data.csv'
         response = requests.get(url)
-        
+
         # Check if the request was successful
         if response.status_code == 200:
             with open(file_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            
+
             # Count lines to verify
             with open(file_path, 'r') as f:
                 line_count = sum(1 for _ in f)
-            
+
             print(f"Downloaded file has {line_count} lines")
         else:
             raise Exception(f"Failed to download data: HTTP Status {response.status_code}")
-        
+
         return file_path
     
     @task
